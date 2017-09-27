@@ -175,7 +175,7 @@ data:
     var bakeryDetailUrl = gateHost + '/bakery/logs/global/{{ "{{ " }}context.status.id{{ " }}" }}';
 
     window.spinnakerSettings = {
-      defaultProviders: ['kubernetes'],
+      defaultProviders: ['kubernetes', 'cf'],
       feedbackUrl: feedbackUrl,
       gateUrl: gateHost,
       bakeryDetailUrl: bakeryDetailUrl,
@@ -187,6 +187,12 @@ data:
             account: 'local',
             namespace: 'default'
           },
+        },
+        cf: {
+          defaults: {
+            account: 'my-cf-account',
+            region: 'default'
+          }
         }
       },
       notifications: {
@@ -232,8 +238,20 @@ data:
       account:
         env: ${providers.kubernetes.primaryCredentials.name}
 
+    cf:
+      enabled: ${.Values.providers.cf.enabled:false}
+
+      accounts:
+        - name: ${.Values.providers.cf.primaryCredentials.name}
+          api: ${.Values.providers.cf.primaryCredentials.api}
+          console: ${.Values.providers.cf.primaryCredentials.console}
+          org: ${.Values.providers.cf.defaultOrg}
+          space: ${.Values.providers.cf.defaultSpace}
+          username: ${.Values.providers.cf.account.name:}
+          password: ${.Values.providers.cf.account.password:}
+
     kubernetes:
-      enabled: true
+      enabled: ${.Values.providers.kubernetes.primaryCredentials.name:false}
       accounts:
         - name: local
           dockerRegistries:
@@ -242,7 +260,7 @@ data:
             {{- end }}
 
     dockerRegistry:
-      enabled: true
+      enabled: ${.Values.providers.dockerRegistry.primaryCredentials.name:false}
       accounts:
       {{- range $index, $account := .Values.accounts }}
         - name: {{ $account.name }}
@@ -433,15 +451,24 @@ data:
 
     providers:
     {{ with $account := first .Values.accounts }}
+      cf:
+        enabled: ${.Values.providers.cf.enabled:false}
+        defaultOrg: ${.Values.providers.cf.defaultOrg}
+        defaultSpace: ${.Values.providers.cf.defaultSpace}
+        primaryCredentials:
+          name: ${.Values.providers.cf.primaryCredentials.name}
+          api: ${.Values.providers.cf.primaryCredentials.api}
+          console: ${.Values.providers.cf.primaryCredentials.console}
+
       kubernetes:
-        enabled: true
+        enabled: ${.Values.providers.kubernetes.primaryCredentials.name:false}
         primaryCredentials:
           name: local
           namespace: default
           dockerRegistryAccount: {{ $account.name }}
 
       dockerRegistry:
-        enabled: true
+        enabled: ${.Values.providers.kubernetes.primaryCredentials.name:false}
         primaryCredentials:
           name: {{ $account.name }}
           address: {{ $account.address }}
