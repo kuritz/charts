@@ -5,6 +5,61 @@ metadata:
   labels:
     app: {{ template "fullname" . }}
 data:
+  echo.yml: |
+{{ .Files.Get "config/echo.yml" | indent 4 }}
+  echo-local.yml: |
+{{ .Files.Get "config/echo-local.yml" | indent 4 }}
+  fiat.yml: |
+{{ .Files.Get "config/fiat.yml" | indent 4 }}
+  front50.yml: |
+{{ .Files.Get "config/front50.yml" | indent 4 }}
+  front50-local.yml: |
+{{ .Files.Get "config/front50-local.yml" | indent 4 }}
+  igor.yml: |
+{{ .Files.Get "config/igor.yml" | indent 4 }}
+  igor-local.yml: |
+{{ .Files.Get "config/igor-local.yml" | indent 4 }}
+  orca.yml: |
+{{ .Files.Get "config/orca.yml" | indent 4 }}
+  orca-local.yml: |
+{{ .Files.Get "config/orca-local.yml" | indent 4 }}
+  rosco.yml: |
+{{ .Files.Get "config/rosco.yml" | indent 4 }}
+  rosco-local.yml: |
+{{ .Files.Get "config/rosco-local.yml" | indent 4 }}
+  gate.yml: |
+    server:
+      port: ${services.gate.port:8084}
+      address: 0.0.0.0
+      # ssl:
+      #   enabled: false
+      #   keyStore: /opt/spinnaker/gate-tls/keystore.jks
+      #   keyStorePassword: password
+      #   keyAlias: server
+
+    # Circular references since we're already using 'services'
+    # services:
+    #   clouddriver:
+    #     baseUrl: ${services.clouddriver.baseUrl:localhost:7002}
+    #   orca:
+    #     baseUrl: ${services.orca.baseUrl:localhost:8083}
+    #   front50:
+    #     baseUrl: ${services.front50.baseUrl:localhost:8080}
+    # #optional services:
+    #   echo:
+    #     enabled: ${services.echo.enabled:true}
+    #     baseUrl: ${services.echo.baseUrl:8089}
+    #   flapjack:
+    #     enabled: ${services.flapjack.enabled:false}
+    #   igor:
+    #     enabled: ${services.igor.enabled:false}
+    #     baseUrl: ${services.igor.baseUrl:8088}
+
+    cors:
+      allowedOriginsPattern: {{ .Values.gate.allowedOriginsPattern }}
+
+    redis:
+      connection: ${services.redis.connection}
   clouddriver.yml: |
     server:
       port: ${services.clouddriver.port:7002}
@@ -57,7 +112,7 @@ data:
           jsonPath: ${providers.google.primaryCredentials.jsonPath}
 
     cf:
-      enabled: ${providers.cf.enabled:false}
+      enabled: true
 
       accounts:
         - name: ${providers.cf.primaryCredentials.name}
@@ -69,7 +124,7 @@ data:
           password: ${providers.cf.account.password:}
 
     kubernetes:
-      enabled: ${providers.kubernetes.enabled:false}
+      enabled: true
       accounts:
         - name: ${providers.kubernetes.primaryCredentials.name}
           serviceAccount: true
@@ -109,126 +164,6 @@ data:
     credentials:
       primaryAccountTypes: ${providers.aws.primaryCredentials.name}, ${providers.google.primaryCredentials.name}, ${providers.cf.primaryCredentials.name}, ${providers.azure.primaryCredentials.name}
       challengeDestructiveActionsEnvironments: ${providers.aws.primaryCredentials.name}, ${providers.google.primaryCredentials.name}, ${providers.cf.primaryCredentials.name}, ${providers.azure.primaryCredentials.name}
-
-  echo.yml: |
-{{ .Files.Get "config/echo.yml" | indent 4 }}
-  echo-local.yml: |
-{{ .Files.Get "config/echo-local.yml" | indent 4 }}
-  fiat.yml: |
-{{ .Files.Get "config/fiat.yml" | indent 4 }}
-  fiat.yml-local: |
-{{ .Files.Get "config/fiat-local.yml" | indent 4 }}
-  front50.yml: |
-{{ .Files.Get "config/front50.yml" | indent 4 }}
-  front50-local.yml: |
-{{ .Files.Get "config/front50-local.yml" | indent 4 }}
-  gate.yml: |
-    server:
-      port: ${services.gate.port:8084}
-      address: 0.0.0.0
-      # ssl:
-      #   enabled: false
-      #   keyStore: /opt/spinnaker/gate-tls/keystore.jks
-      #   keyStorePassword: password
-      #   keyAlias: server
-
-    # Circular references since we're already using 'services'
-    # services:
-    #   clouddriver:
-    #     baseUrl: ${services.clouddriver.baseUrl:localhost:7002}
-    #   orca:
-    #     baseUrl: ${services.orca.baseUrl:localhost:8083}
-    #   front50:
-    #     baseUrl: ${services.front50.baseUrl:localhost:8080}
-    # #optional services:
-    #   echo:
-    #     enabled: ${services.echo.enabled:true}
-    #     baseUrl: ${services.echo.baseUrl:8089}
-    #   flapjack:
-    #     enabled: ${services.flapjack.enabled:false}
-    #   igor:
-    #     enabled: ${services.igor.enabled:false}
-    #     baseUrl: ${services.igor.baseUrl:8088}
-
-    cors:
-      allowedOriginsPattern: {{ .Values.gate.allowedOriginsPattern }}
-
-    redis:
-      connection: ${services.redis.connection}
-  igor.yml: |
-{{ .Files.Get "config/igor.yml" | indent 4 }}
-  igor-local.yml: |
-{{ .Files.Get "config/igor-local.yml" | indent 4 }}
-  orca.yml: |
-{{ .Files.Get "config/orca.yml" | indent 4 }}
-  orca-local.yml: |
-{{ .Files.Get "config/orca-local.yml" | indent 4 }}
-  rosco.yml: |
-{{ .Files.Get "config/rosco.yml" | indent 4 }}
-  rosco-local.yml: |
-{{ .Files.Get "config/rosco-local.yml" | indent 4 }}
-  settings.js: |
-    'use strict';
-
-    var feedbackUrl = 'http://localhost';
-    var gateHost = '/gate';
-    var bakeryDetailUrl = gateHost + '/bakery/logs/global/{{ "{{ " }}context.status.id{{ " }}" }}';
-
-    window.spinnakerSettings = {
-      defaultProviders: ['kubernetes', 'cf'],
-      feedbackUrl: feedbackUrl,
-      gateUrl: gateHost,
-      bakeryDetailUrl: bakeryDetailUrl,
-      pollSchedule: 30000,
-      defaultTimeZone: 'America/Los_Angeles', // see http://momentjs.com/timezone/docs/#/data-utilities/
-      providers: {
-        kubernetes: {
-          defaults: {
-            account: 'local',
-            namespace: 'default'
-          },
-        },
-        cf: {
-          defaults: {
-            account: 'my-cf-account',
-            region: 'default'
-          }
-        }
-      },
-      notifications: {
-        email: {
-          enabled: true,
-        },
-        hipchat: {
-          enabled: false,
-          botName: 'Skynet T-800'
-        },
-        sms: {
-          enabled: false,
-        },
-        slack: {
-          enabled: false,
-          botName: 'spinnakerbot'
-        }
-      },
-      whatsNew: {
-        gistId: '32526cd608db3d811b38',
-        fileName: 'news.md',
-      },
-      feature: {
-        pipelines: true,
-        jobs: true,
-        notifications: true,
-        fastProperty: false,
-        vpcMigrator: false,
-        clusterDiff: false,
-        roscoMode: false,
-        netflixMode: false,
-        infrastructureStages: true, // Should 'createLoadBalancer' be a pipeline stage? (no).
-      },
-    };
-  spinnaker.yml: |
-{{ .Files.Get "config/spinnaker.yml" | indent 4 }}
   clouddriver-local.yml: |
     server:
       port: ${services.clouddriver.port:7002}
@@ -240,7 +175,6 @@ data:
 
     cf:
       enabled: {{ .Values.providers.cf.enabled:false }}
-
       accounts:
         - name: {{ .Values.providers.cf.primaryCredentials.name }}
           api: {{ .Values.providers.cf.primaryCredentials.api }}
@@ -251,7 +185,7 @@ data:
           password: {{ .Values.providers.cf.account.password: }}
 
     kubernetes:
-      enabled: {{ .Values.providers.kubernetes.primaryCredentials.name:false }}
+      enabled: true
       accounts:
         - name: local
           dockerRegistries:
@@ -260,7 +194,7 @@ data:
             {{- end }}
 
     dockerRegistry:
-      enabled: {{ .Values.providers.dockerRegistry.primaryCredentials.name:false }}
+      enabled: true
       accounts:
       {{- range $index, $account := .Values.accounts }}
         - name: {{ $account.name }}
@@ -282,6 +216,8 @@ data:
     credentials:
       primaryAccountTypes: ${providers.kubernetes.primaryCredentials.name}
       challengeDestructiveActionsEnvironments: ${providers.kubernetes.primaryCredentials.name}
+  spinnaker.yml: |
+{{ .Files.Get "config/spinnaker.yml" | indent 4 }}
   spinnaker-local.yml: |
     global:
       spinnaker:
@@ -334,8 +270,8 @@ data:
             token: # twilio auth token
             from: # phone number by which sms messages are sent
           slack:
-            enabled: false
-            token: # the part after http://hooks.slack.com/services/
+            enabled: {{ .Values.slack.enabled }}
+            token: {{ .Values.slack.token }}
 
       deck:
         host: {{ template "fullname" . }}-deck
@@ -451,24 +387,15 @@ data:
 
     providers:
     {{ with $account := first .Values.accounts }}
-      cf:
-        enabled: {{ .Values.providers.cf.enabled:false }}
-        defaultOrg: {{ .Values.providers.cf.defaultOrg }}
-        defaultSpace: {{ .Values.providers.cf.defaultSpace }}
-        primaryCredentials:
-          name: {{ .Values.providers.cf.primaryCredentials.name }}
-          api: {{ .Values.providers.cf.primaryCredentials.api }}
-          console: {{ .Values.providers.cf.primaryCredentials.console }}
-
       kubernetes:
-        enabled: {{ .Values.providers.kubernetes.primaryCredentials.name:false }}
+        enabled: true
         primaryCredentials:
           name: local
           namespace: default
           dockerRegistryAccount: {{ $account.name }}
 
       dockerRegistry:
-        enabled: {{ .Values.providers.kubernetes.primaryCredentials.name:false }}
+        enabled: true
         primaryCredentials:
           name: {{ $account.name }}
           address: {{ $account.address }}
@@ -481,3 +408,11 @@ data:
           passwordFile: /tmp/registry/password-{{ $account.name }}
           {{- end }}
     {{ end }}
+      cf:
+        enabled: {{ .Values.providers.cf.enabled:false }}
+        defaultOrg: {{ .Values.providers.cf.defaultOrg }}
+        defaultSpace: {{ .Values.providers.cf.defaultSpace }}
+        primaryCredentials:
+          name: {{ .Values.providers.cf.primaryCredentials.name }}
+          api: {{ .Values.providers.cf.primaryCredentials.api }}
+          console: {{ .Values.providers.cf.primaryCredentials.console }}
