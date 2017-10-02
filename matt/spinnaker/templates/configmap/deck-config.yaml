@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "fullname" . }}-deck-config
+  labels:
+    app: {{ template "fullname" . }}
+data:
+  spinnaker.yml: |
+{{ .Files.Get "config/spinnaker.yml" | indent 4 }}
+  settings.js: |
+    'use strict';
+    var feedbackUrl = 'http://localhost';
+    var gateHost = '/gate';
+    var bakeryDetailUrl = gateHost + '/bakery/logs/global/{{ "{{ " }}context.status.id{{ " }}" }}';
+    window.spinnakerSettings = {
+      defaultProviders: ['kubernetes', 'cf'],
+      feedbackUrl: feedbackUrl,
+      gateUrl: gateHost,
+      bakeryDetailUrl: bakeryDetailUrl,
+      pollSchedule: 30000,
+      defaultTimeZone: 'America/Los_Angeles', // see http://momentjs.com/timezone/docs/#/data-utilities/
+      providers: {
+        kubernetes: {
+          defaults: {
+            account: 'local',
+            namespace: 'default'
+          },
+        },
+        cf: {
+          defaults: {
+            account: 'my-cf-account',
+            region: 'default'
+          },
+        },
+      },
+      notifications: {
+        email: {
+          enabled: {{ .Values.mail.enabled }},
+        },
+        hipchat: {
+          enabled: false,
+          botName: 'Skynet T-800'
+        },
+        sms: {
+          enabled: false,
+        },
+        slack: {
+          enabled: false,
+      },
+      whatsNew: {
+        gistId: '32526cd608db3d811b38',
+        fileName: 'news.md',
+      },
+      feature: {
+        pipelines: true,
+        jobs: true,
+        notifications: true,
+        fastProperty: false,
+        vpcMigrator: false,
+        clusterDiff: false,
+        roscoMode: false,
+        netflixMode: false,
+        infrastructureStages: true, // Should 'createLoadBalancer' be a pipeline stage? (no).
+      },
+    };

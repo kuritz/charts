@@ -33,8 +33,8 @@ spec:
               name: deck
           volumeMounts:
             - mountPath: /opt/spinnaker/config
-              name: {{ template "fullname" . }}-spinnaker-config
+              name: {{ template "fullname" . }}-deck-config
       volumes:
-        - name: {{ template "fullname" . }}-spinnaker-config
+        - name: {{ template "fullname" . }}-deck-config
           configMap:
-            name: {{ template "fullname" . }}-spinnaker-config
+            name: {{ template "fullname" . }}-deck-config
