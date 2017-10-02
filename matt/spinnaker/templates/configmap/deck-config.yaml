@@ -9,6 +9,7 @@ data:
 {{ .Files.Get "config/spinnaker.yml" | indent 4 }}
   settings.js: |
     'use strict';
+
     var feedbackUrl = 'http://localhost';
     var gateHost = '/gate';
     var bakeryDetailUrl = gateHost + '/bakery/logs/global/{{ "{{ " }}context.status.id{{ " }}" }}';
@@ -23,29 +24,30 @@ data:
         kubernetes: {
           defaults: {
             account: 'local',
-            namespace: 'default'
+            namespace: 'default',
           },
         },
         cf: {
           defaults: {
             account: 'my-cf-account',
-            region: 'default'
+            region: 'default',
           },
         },
       },
       notifications: {
         email: {
-          enabled: {{ .Values.mail.enabled }},
+          enabled: false,
         },
         hipchat: {
           enabled: false,
-          botName: 'Skynet T-800'
+          botName: 'Skynet T-800',
         },
         sms: {
           enabled: false,
         },
         slack: {
           enabled: false,
+        },
       },
       whatsNew: {
         gistId: '32526cd608db3d811b38',
