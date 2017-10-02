@@ -26,13 +26,13 @@ spec:
               name: gate
           volumeMounts:
             - mountPath: /opt/spinnaker/config
-              name: {{ template "fullname" . }}-spinnaker-config
+              name: {{ template "fullname" . }}-gate-config
           livenessProbe:
             tcpSocket:
               port: 8084
             initialDelaySeconds: 30
             timeoutSeconds: 1
       volumes:
-        - name: {{ template "fullname" . }}-spinnaker-config
+        - name: {{ template "fullname" . }}-gate-config
           configMap:
             name: {{ template "fullname" . }}-spinnaker-config

@@ -26,7 +26,7 @@ spec:
               name: orca
           volumeMounts:
             - mountPath: /opt/spinnaker/config
-              name: {{ template "fullname" . }}-spinnaker-config
+              name: {{ template "fullname" . }}-orca-config
           readinessProbe:
             httpGet:
               path: /env
@@ -34,6 +34,6 @@ spec:
             initialDelaySeconds: 20
             timeoutSeconds: 1
       volumes:
-        - name: {{ template "fullname" . }}-spinnaker-config
+        - name: {{ template "fullname" . }}-orca-config
           configMap:
             name: {{ template "fullname" . }}-spinnaker-config

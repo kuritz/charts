@@ -26,7 +26,7 @@ spec:
               name: front50
           volumeMounts:
             - mountPath: /opt/spinnaker/config
-              name: {{ template "fullname" . }}-spinnaker-config
+              name: {{ template "fullname" . }}-front50-config
             - mountPath: /root/.aws
               name: {{ template "fullname" . }}-s3-config
             {{ if .Values.gcs.enabled }}
@@ -40,7 +40,7 @@ spec:
             initialDelaySeconds: 20
             timeoutSeconds: 1
       volumes:
-        - name: {{ template "fullname" . }}-spinnaker-config
+        - name: {{ template "fullname" . }}-front50-config
           configMap:
             name: {{ template "fullname" . }}-spinnaker-config
         - name: {{ template "fullname" . }}-s3-config
