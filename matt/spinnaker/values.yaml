@@ -60,7 +60,7 @@ providers:
     primaryCredentials:
       name: default-name
       api: https://api.cf.com
-      console: https:apps.cf.com
+      console: https://apps.cf.com
 
 # Bucket to use when storing config data in S3 compatible storage
 storageBucket: spinnaker
