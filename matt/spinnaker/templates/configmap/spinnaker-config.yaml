@@ -174,15 +174,15 @@ data:
         env: ${providers.kubernetes.primaryCredentials.name}
 
     cf:
-      enabled: {{ .Values.providers.cf.enabled:false }}
+      enabled: true
       accounts:
         - name: {{ .Values.providers.cf.primaryCredentials.name }}
           api: {{ .Values.providers.cf.primaryCredentials.api }}
           console: {{ .Values.providers.cf.primaryCredentials.console }}
           org: {{ .Values.providers.cf.defaultOrg }}
           space: {{ .Values.providers.cf.defaultSpace }}
-          username: {{ .Values.providers.cf.account.name: }}
-          password: {{ .Values.providers.cf.account.password: }}
+          username: {{ .Values.providers.cf.account.name }}
+          password: {{ .Values.providers.cf.account.password }}
 
     kubernetes:
       enabled: true
@@ -270,8 +270,8 @@ data:
             token: # twilio auth token
             from: # phone number by which sms messages are sent
           slack:
-            enabled: {{ .Values.slack.enabled }}
-            token: {{ .Values.slack.token }}
+            enabled: false
+            token: # token
 
       deck:
         host: {{ template "fullname" . }}-deck
@@ -373,7 +373,7 @@ data:
         #
         # Note that jenkins is not installed with Spinnaker so you must obtain this
         # on your own if you are interested.
-        enabled: true
+        enabled: false
         defaultMaster:
           name: default
           baseUrl: http://{{ .Release.Name }}-jenkins:8080/
@@ -409,7 +409,7 @@ data:
           {{- end }}
     {{ end }}
       cf:
-        enabled: {{ .Values.providers.cf.enabled:false }}
+        enabled: true
         defaultOrg: {{ .Values.providers.cf.defaultOrg }}
         defaultSpace: {{ .Values.providers.cf.defaultSpace }}
         primaryCredentials:
