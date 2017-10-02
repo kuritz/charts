@@ -239,7 +239,7 @@ providers:
     # For more information on configuring Cloud Foundry (cf) support, see
     # http://www.spinnaker.io/v1.0/docs/target-deployment-setup#section-cloud-foundry-platform-setup
 
-    enabled: false
+    enabled: true
     defaultOrg: spinnaker-cf-org
     defaultSpace: spinnaker-cf-space
     primaryCredentials:
